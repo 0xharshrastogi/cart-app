@@ -9,3 +9,26 @@ export interface User extends Credentials {
 
   lastName: string;
 }
+
+export interface Product {
+  name: string;
+  image: string;
+
+  price: string;
+}
+
+export interface OrderItem {
+  product: Product;
+
+  quantity: number;
+}
+
+export interface ICartHandler {}
+
+export interface Cart {
+  id: number;
+
+  products: Product[];
+
+  userId: number;
+}
