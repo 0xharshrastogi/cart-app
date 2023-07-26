@@ -1,0 +1,15 @@
+root = true
+
+[*]
+charset = utf-8
+
+[*.ts]
+indent_style = space
+indent_size = 2
+
+# Insert a new line at the end of each file.
+insert_final_newline = true
+end_of_line = LF
+trim_trailing_whitespace = true
+tab_width = 2
+quote_type = single
