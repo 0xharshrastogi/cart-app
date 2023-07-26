@@ -1,0 +1,13 @@
+.cart-section-container {
+  display: flex;
+  flex-direction: column;
+
+  .cart-section-content {
+    @apply shadow-md;
+    background-color: white;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    margin-top: 1rem;
+    flex: 1;
+  }
+}

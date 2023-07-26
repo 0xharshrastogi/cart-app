@@ -11,7 +11,8 @@ export interface User extends Credentials {
 }
 
 export interface Product {
-  name: string;
+  id: string;
+  title: string;
   image: string;
 
   price: string;
