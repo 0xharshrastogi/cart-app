@@ -1,0 +1,9 @@
+.shopping-items-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  padding: 2.5rem 5rem;
+  --gap: 3em;
+
+  row-gap: var(--gap);
+  column-gap: var(--gap);
+}

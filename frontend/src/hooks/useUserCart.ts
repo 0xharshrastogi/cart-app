@@ -32,6 +32,9 @@ export const useUserCart = (userId: string) => {
 
   const removeProduct = (product: Product) => {};
 
+  const insert = (product: Product, quantity: number) =>
+    dispatch(cartOrderSlice.actions.addOrder({ product, quantity }));
+
   return {
     orders: userOrders.items,
     loadedFromServer: userOrders.initialized,
@@ -40,5 +43,6 @@ export const useUserCart = (userId: string) => {
     updateQuantityOfProduct,
     updateOrder,
     remove,
+    insert,
   };
 };

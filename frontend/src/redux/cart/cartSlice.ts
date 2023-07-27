@@ -9,11 +9,15 @@ const initialState: UserCart = {
   loading: false,
 };
 
+const isProductExistInCart = (products: CartItem[], product: Product) =>
+  products.find((item) => item.product.id === product.id) != null;
+
 export const cartOrderSlice = createSlice({
   name: 'UserOrder',
   initialState: initialState,
   reducers: {
     addOrder: (state, action: PayloadAction<CartItem>) => {
+      if (isProductExistInCart(state.items, action.payload.product)) return;
       return { ...state, items: [...state.items, action.payload] };
     },
 
