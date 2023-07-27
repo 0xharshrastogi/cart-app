@@ -2,7 +2,7 @@
 
 import CartProductItem from "@/container/CartProductItem/CartProductItem";
 import CartSection from "@/container/CartSection/CartSection";
-import Navbar from "@/container/Navbar";
+import Navbar from "@/container/Navbar/Navbar";
 import { useUserCart } from "@/hooks/useUserCart";
 import { useEffect, useMemo } from "react";
 import { Product } from "shared";

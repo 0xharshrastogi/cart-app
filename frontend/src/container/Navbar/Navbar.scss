@@ -1,0 +1,22 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 2.5rem;
+  min-height: 4rem /* 64px */;
+  width: 100%;
+  background-color: rgb(234, 234, 234);
+
+  .item {
+    margin-left: auto;
+  }
+
+  ul {
+    display: inline-flex;
+    align-items: center;
+    gap: 2rem;
+  }
+}
+:where(.navbar > *) {
+  display: inline-flex;
+  align-items: center;
+}
