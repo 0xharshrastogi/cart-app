@@ -27,6 +27,11 @@ export const useUserCart = (userId: string) => {
     updateOrder({ product, quantity });
   };
 
+  const remove = (product: Product) =>
+    dispatch(cartOrderSlice.actions.removeOrder(product));
+
+  const removeProduct = (product: Product) => {};
+
   return {
     orders: userOrders.items,
     loadedFromServer: userOrders.initialized,
@@ -34,5 +39,6 @@ export const useUserCart = (userId: string) => {
     loading: userOrders.loading,
     updateQuantityOfProduct,
     updateOrder,
+    remove,
   };
 };

@@ -4,7 +4,7 @@ import CartProductItem from "@/container/CartProductItem/CartProductItem";
 import CartSection from "@/container/CartSection/CartSection";
 import Navbar from "@/container/Navbar";
 import { useUserCart } from "@/hooks/useUserCart";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Product } from "shared";
 import "./CartPage.scss";
 
@@ -20,6 +20,17 @@ const CartPage = () => {
     userCartOrders.updateQuantityOfProduct(product, quantity);
   };
 
+  const onCancelHandler = (product: Product) => userCartOrders.remove(product);
+
+  const totalCost = useMemo(() => {
+    return userCartOrders.orders.reduce(
+      (total, { product, quantity }) => total + product.price * quantity,
+      0
+    );
+  }, [userCartOrders.orders]);
+
+  const ADDITIONAL_COST = 10;
+
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
       <Navbar />
@@ -31,14 +42,30 @@ const CartPage = () => {
                 key={item.product.id}
                 product={item.product}
                 initialQuantity={item.quantity}
-                onQuantityChange={(quantity) =>
+                onCancel={() => onCancelHandler(item.product)}
+                onDebouncedQuantityChange={(quantity) =>
                   onQuantityChangeHandler(item.product, quantity)
                 }
               />
             ))}
           </div>
         </CartSection>
-        <CartSection title="Payment Summery"></CartSection>
+        <CartSection title="Payment Summery">
+          <div className="summery-item order-summery">
+            <span>Order Summery</span>
+            <span>$ {totalCost}</span>
+          </div>
+
+          <div className="summery-item order-summery">
+            <span>Additional Cost</span>
+            <span>$ {ADDITIONAL_COST}</span>
+          </div>
+
+          <div className="summery-item order-summery">
+            <span>Total Cost</span>
+            <span>$ {ADDITIONAL_COST + totalCost}</span>
+          </div>
+        </CartSection>
       </main>
     </div>
   );

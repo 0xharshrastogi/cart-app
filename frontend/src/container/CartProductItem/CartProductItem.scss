@@ -3,7 +3,8 @@
   display: flex;
 
   .product-info {
-    width: 60%;
+    // width: 60%;
+    flex: 1;
     .title {
       font-weight: 600;
     }
@@ -11,7 +12,7 @@
 
   :nth-child(2) {
     flex: 1;
-    width: 40%;
+    // width: 40%;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -25,5 +26,9 @@
   .quality span {
     font-size: 0.75rem;
     color: rgb(197, 197, 197);
+  }
+
+  .quality input {
+    width: 3rem;
   }
 }

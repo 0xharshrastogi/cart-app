@@ -1,4 +1,5 @@
-import { FC, useState } from "react";
+import { useDebounce } from "@/hooks/useDebouce";
+import { FC, useEffect, useRef, useState } from "react";
 import { Product } from "shared";
 import "./CartProductItem.scss";
 
@@ -8,10 +9,16 @@ type CartProductItemProps = {
   initialQuantity: number;
 
   onQuantityChange?: (value: number) => void;
+
+  onDebouncedQuantityChange?: (value: number) => void;
+
+  onCancel?: () => void;
 };
 
 const CartProductItem: FC<CartProductItemProps> = (props) => {
   const [quantity, setQuantity] = useState(props.initialQuantity);
+  const debouncedValue = useDebounce(quantity, 500);
+  const onDebouncedQuantityChangeRef = useRef(props.onDebouncedQuantityChange);
 
   const { product } = props;
 
@@ -19,6 +26,10 @@ const CartProductItem: FC<CartProductItemProps> = (props) => {
     setQuantity(value);
     props.onQuantityChange?.(value);
   };
+
+  useEffect(() => {
+    onDebouncedQuantityChangeRef.current?.(debouncedValue);
+  }, [debouncedValue]);
 
   return (
     <div className="cart-product-item">
@@ -32,7 +43,7 @@ const CartProductItem: FC<CartProductItemProps> = (props) => {
         <div className="quality">
           <span>Quantity</span>
           <input
-            style={{ width: 100, background: "#eee" }}
+            style={{ width: 50, background: "#eee" }}
             type="number"
             className="input"
             name="quantity"
@@ -40,6 +51,9 @@ const CartProductItem: FC<CartProductItemProps> = (props) => {
             value={quantity}
             onChange={(e) => onQuantityChange(parseInt(e.target.value))}
           />
+        </div>
+        <div>
+          <button onClick={props.onCancel}>❌</button>
         </div>
       </div>
     </div>

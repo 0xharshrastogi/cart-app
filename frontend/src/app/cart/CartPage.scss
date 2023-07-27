@@ -4,3 +4,14 @@
   column-gap: 2rem;
   //   background-color: rebeccapurple;
 }
+
+.summery-item {
+  display: flex;
+
+  :first-child {
+    flex: 1;
+    font-size: 0.8rem;
+    color: gray;
+    font-weight: 500;
+  }
+}

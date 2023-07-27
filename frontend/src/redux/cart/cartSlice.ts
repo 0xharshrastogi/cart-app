@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { CartItem, UserCart } from 'shared';
+import { CartItem, Product, UserCart } from 'shared';
 
 const initialState: UserCart = {
   items: [],
@@ -32,6 +32,15 @@ export const cartOrderSlice = createSlice({
 
       state.items[index] = action.payload;
       return state;
+    },
+
+    removeOrder: (state, action: PayloadAction<Product>) => {
+      return {
+        ...state,
+        items: state.items.filter(
+          (item) => item.product.id !== action.payload.id
+        ),
+      };
     },
   },
 });

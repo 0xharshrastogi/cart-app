@@ -15,7 +15,7 @@ export interface Product {
   title: string;
   image: string;
 
-  price: string;
+  price: number;
 }
 
 export interface OrderItem {
