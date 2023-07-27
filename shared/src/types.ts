@@ -33,3 +33,17 @@ export interface Cart {
 
   userId: number;
 }
+
+export interface CartItem {
+  product: Product;
+
+  quantity: number;
+}
+
+export interface UserCart {
+  items: CartItem[];
+
+  initialized: boolean;
+
+  loading: boolean;
+}

@@ -5,11 +5,13 @@ import "./CartProductItem.scss";
 type CartProductItemProps = {
   product: Product;
 
+  initialQuantity: number;
+
   onQuantityChange?: (value: number) => void;
 };
 
 const CartProductItem: FC<CartProductItemProps> = (props) => {
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(props.initialQuantity);
 
   const { product } = props;
 

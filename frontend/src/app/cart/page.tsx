@@ -3,20 +3,22 @@
 import CartProductItem from "@/container/CartProductItem/CartProductItem";
 import CartSection from "@/container/CartSection/CartSection";
 import Navbar from "@/container/Navbar";
-import { useCartUtil } from "@/hooks/useCartUtils";
-import { useEffect, useState } from "react";
+import { useUserCart } from "@/hooks/useUserCart";
+import { useEffect } from "react";
 import { Product } from "shared";
 import "./CartPage.scss";
 
 const CartPage = () => {
-  const [orders, setOrders] = useState<Product[]>([]);
-  const cartUtil = useCartUtil();
+  const userCartOrders = useUserCart("1");
+
   useEffect(() => {
-    cartUtil.fetchOrderOfCart("1").then((orders) => {
-      setOrders(orders);
-      console.log(orders);
-    });
-  }, [cartUtil]);
+    if (userCartOrders.loadedFromServer || userCartOrders.loading) return;
+    userCartOrders.initializeOrders();
+  }, [userCartOrders]);
+
+  const onQuantityChangeHandler = (product: Product, quantity: number) => {
+    userCartOrders.updateQuantityOfProduct(product, quantity);
+  };
 
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
@@ -24,8 +26,15 @@ const CartPage = () => {
       <main className="cart-container px-10 mt-4">
         <CartSection title="Orders">
           <div className="space-y-2">
-            {orders.map((item) => (
-              <CartProductItem key={item.id} product={item} />
+            {userCartOrders.orders.map((item) => (
+              <CartProductItem
+                key={item.product.id}
+                product={item.product}
+                initialQuantity={item.quantity}
+                onQuantityChange={(quantity) =>
+                  onQuantityChangeHandler(item.product, quantity)
+                }
+              />
             ))}
           </div>
         </CartSection>
