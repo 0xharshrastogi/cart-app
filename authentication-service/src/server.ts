@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 
 import { MONGO_CONNECTION_URI, PORT } from './config';
@@ -9,6 +10,7 @@ const initServer = () => {
   const logger = DebugLogger.create('app');
   const app = express();
 
+  app.use(cors());
   app.use(express.json());
 
   app.use('/api', auth);
