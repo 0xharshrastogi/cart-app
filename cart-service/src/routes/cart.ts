@@ -4,6 +4,7 @@ import { isValidObjectId } from 'mongoose';
 import { Product } from '../models/product';
 import {
   Cart,
+  findProductInCart,
   insertProductInCart,
   isProductInCart,
   removeProductInCart,
@@ -14,26 +15,35 @@ const cartLog = debug('cart::log');
 export const cartRouter = express.Router();
 
 cartRouter.get('/cart', async (request, response) => {
-  if (!('userId' in request.query)) {
-    response.status(400).json({
-      error: 'expected a "userId" in query params',
+  try {
+    if (!('userId' in request.query)) {
+      response.status(400).json({
+        error: 'expected a "userId" in query params',
+      });
+      return;
+    }
+
+    let userId = request.query['userId'];
+
+    const cartItem = await Cart.findOne({ userId }).populate(
+      'products.productId'
+    );
+
+    if (cartItem == null) {
+      response.status(404).json({
+        error: 'user not found',
+        message: 'User not found with id ' + userId,
+      });
+      return;
+    }
+
+    response.json(cartItem);
+  } catch (error) {
+    response.status(500).json({
+      message: 'failed to fetch user carts',
+      error: error instanceof Error ? error.message : 'Something went wrong',
     });
-    return;
   }
-
-  let userId = request.query['userId'];
-
-  const cartItem = await Cart.findOne({ userId }).populate('products');
-
-  if (cartItem == null) {
-    response.status(404).json({
-      error: 'user not found',
-      message: 'User not found with id ' + userId,
-    });
-    return;
-  }
-
-  response.json({ name: 'Harsh' });
 });
 
 cartRouter.post('/cart', async (request, response) => {
@@ -43,36 +53,39 @@ cartRouter.post('/cart', async (request, response) => {
 });
 
 cartRouter.post(
-  '/cart/:cardId/update/:action/:productId',
+  '/cart/:cartId/update/:action/:productId',
   async (request, response) => {
-    const { cardId, productId, action } = request.params;
+    const { cartId, productId, action } = request.params;
 
-    if (!isValidObjectId(productId) || !isValidObjectId(cardId)) {
+    if (!isValidObjectId(productId) || !isValidObjectId(cartId)) {
       response.status(400).json({ error: 'Invalid product or card id' });
       return;
     }
 
-    if (!['add', 'remove'].includes(action)) {
+    if (!['add', 'remove', 'quantity'].includes(action)) {
       response.status(400).json({ error: 'invalid action ' + action });
       return;
     }
 
-    const cart = await Cart.findById(cardId);
-    if (cart == null) {
-      response.status(404).json({
-        error: 'cart not found',
-        message: 'Cart not found into records',
+    const quantity = request.query['quantity'] ?? null;
+    if (action === 'quantity' && !quantity) {
+      cartLog('quantity query not present in url');
+      response.status(400).json({
+        error: `expected 'quantity' as unsigned integer value in query params`,
       });
       return;
     }
 
-    if (!isValidObjectId(productId))
-      response.status(400).json({ error: 'Invalid ID' });
-    const product = await Product.findById(productId);
-    if (product == null) {
+    const [cart, product] = await Promise.all([
+      Cart.findById(cartId),
+      Product.findById(productId),
+    ]);
+
+    if (cart == null || product == null) {
+      const item = cart == null ? 'cart' : 'product';
       response.status(404).json({
-        error: 'product not found',
-        message: 'Product not found into records',
+        error: `${item}not found`,
+        message: `${item} not found into records`,
       });
       return;
     }
@@ -95,6 +108,17 @@ cartRouter.post(
       }
       await removeProductInCart(cart, product);
       cartLog('success to remove product');
+    }
+
+    if (action === 'quantity') {
+      const product = findProductInCart(cart, productId);
+      if (!product) {
+        cartLog('failed to remove: product is not in cart');
+        response.status(400).json({ error: 'product is not in cart' });
+        return;
+      }
+      product.quantity = parseInt(quantity as string);
+      await cart.save();
     }
     response.send();
   }
