@@ -1,5 +1,6 @@
 "use client";
 
+import { PrivateComponentWrapper } from "@/components/PrivateComponentWrapper";
 import Navbar from "@/container/Navbar/Navbar";
 import { ShoppingItem } from "@/container/ShoopingItem/ShoppingItem";
 import { useUserCart } from "@/hooks/useUserCart";
@@ -31,7 +32,7 @@ const ShopPage = () => {
   };
 
   return (
-    <>
+    <PrivateComponentWrapper redirectTo={"/account/login"}>
       <Navbar />
       <main className="shopping-items-container">
         {products?.map((product) => (
@@ -45,7 +46,7 @@ const ShopPage = () => {
           />
         ))}
       </main>
-    </>
+    </PrivateComponentWrapper>
   );
 };
 
