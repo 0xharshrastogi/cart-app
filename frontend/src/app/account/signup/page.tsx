@@ -1,15 +1,20 @@
 "use client";
 import Alert from "@/components/Alert";
 import { AuthenticationApiService } from "@/helper/AuthenticationService";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useForm } from "@/hooks/useForm";
+import { userSlice } from "@/redux/user/userSlice";
 import { IAuthApiService } from "@/shared/types";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEventHandler, useEffect, useState } from "react";
 import { User } from "shared";
 
 const authApiService: IAuthApiService = new AuthenticationApiService();
 
 const SignupPage = () => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   const [formError, setFormError] = useState<Error | null>(null);
   const form = useForm<User>({
     firstName: "",
@@ -32,7 +37,15 @@ const SignupPage = () => {
     event.preventDefault();
     authApiService
       .signup(form.value)
-      .then((data) => console.log(data))
+      .then((data) => {
+        dispatch(
+          userSlice.actions.setUserAuthenticate({
+            info: data.user,
+            token: data.token,
+          })
+        );
+        router.push("/");
+      })
       .catch((err) => setFormError(err));
   };
 
