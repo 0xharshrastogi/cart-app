@@ -19,4 +19,9 @@ export interface IAuthApiService {
     user: UserWithId;
     token: string;
   }>;
+
+  login(credential: Credentials): Promise<{
+    user: UserWithId;
+    token: string;
+  }>;
 }

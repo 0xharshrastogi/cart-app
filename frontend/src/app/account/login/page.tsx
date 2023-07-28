@@ -1,11 +1,21 @@
 "use client";
 import Alert from "@/components/Alert";
+import { AuthenticationApiService } from "@/helper/AuthenticationService";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useForm } from "@/hooks/useForm";
+import { userSlice } from "@/redux/user/userSlice";
+import { IAuthApiService } from "@/shared/types";
 import Link from "next/link";
-import { FormEventHandler } from "react";
+import { useRouter } from "next/navigation";
+import { FormEventHandler, useState } from "react";
 import { Credentials } from "shared";
 
+const authApiService: IAuthApiService = new AuthenticationApiService();
+
 const LoginPage = () => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const [formError, setFormError] = useState<Error | null>(null);
   const form = useForm<Credentials>({
     email: "",
     password: "",
@@ -13,7 +23,12 @@ const LoginPage = () => {
 
   const onSubmitHandler: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    console.log(form.value);
+    authApiService
+      .login(form.value)
+      .then(({ token, user: info }) => ({ token, info }))
+      .then((value) => dispatch(userSlice.actions.setUserAuthenticate(value)))
+      .then(() => router.push("/"))
+      .catch((error) => setFormError(error));
   };
 
   return (
@@ -28,7 +43,7 @@ const LoginPage = () => {
             <div className="mb-4">
               <span className="font-bold text-2xl text-gray-700">Login</span>
             </div>
-            <Alert hidden type="error">
+            <Alert hidden={!formError} type="error">
               This is alert
             </Alert>
           </header>
