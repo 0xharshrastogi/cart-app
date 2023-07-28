@@ -1,11 +1,13 @@
-export interface User {
-  firstName: string;
-
-  lastName: string;
-
+export interface Credential {
   email: string;
 
   password: string;
+}
+
+export interface User extends Credential {
+  firstName: string;
+
+  lastName: string;
 }
 
 export interface IPasswordService {
