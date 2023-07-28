@@ -1,3 +1,4 @@
+import cors from 'cors';
 import debug from 'debug';
 import express from 'express';
 import './db/mongoose';
@@ -10,6 +11,7 @@ const PORT = 8080;
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use('/api/', cartRouter);
 app.use('/api/', productRouter);
