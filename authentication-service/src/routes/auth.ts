@@ -1,14 +1,27 @@
 import { Router } from 'express';
 
-import { Credential, IPasswordService, User } from '../common/types';
+import { UserOutDTO } from '../DTO/UserOutDTO';
+import {
+  Credential,
+  IJsonWebTokenService,
+  IPasswordService,
+  User,
+} from '../common/types';
+import { APP_JWT_EXPIRATION_INTERVAL_SECOND, APP_JWT_SECRET } from '../config';
 import { BcryptPassword as BcryptPasswordService } from '../helpers/BcryptPasswordHandler';
+import { ApplicationJwtService } from '../helpers/JwtService';
 import { DebugLogger } from '../helpers/Logger';
+import { validateJwt } from '../middleware/validateJwt';
 import { UserCollection } from '../models/user';
 
 export const router = Router();
 
 const logger = DebugLogger.create('route::auth');
 const password: IPasswordService = new BcryptPasswordService();
+const jsonwebtoken: IJsonWebTokenService = new ApplicationJwtService({
+  secret: APP_JWT_SECRET,
+  expireInSecond: APP_JWT_EXPIRATION_INTERVAL_SECOND,
+});
 
 router.post('/auth/signup', async (request, response) => {
   const user = request.body as User;
@@ -30,7 +43,13 @@ router.post('/auth/signup', async (request, response) => {
     document.save();
 
     logger.log('user info saved successfully');
-    response.status(200).json(document);
+    response.status(200).json({
+      user: new UserOutDTO(document),
+      token: jsonwebtoken.encode({
+        email: document.email,
+        id: document.id,
+      }),
+    });
   } catch (error) {
     logger.log(error);
     response.status(500).json({
@@ -61,11 +80,13 @@ router.post('/auth/login', async (request, response) => {
     }
     logger.log('user login successful');
     response.json({
-      user: {
-        firstName: user!.firstName,
-        lastName: user!.lastName,
-        email: user!.email,
-      },
+      user: new UserOutDTO(user!),
+      token: jsonwebtoken.encode({
+        user: {
+          email: user!.email,
+          id: user!.id,
+        },
+      }),
     });
   } catch (error) {
     logger.log(error);
@@ -75,3 +96,15 @@ router.post('/auth/login', async (request, response) => {
     });
   }
 });
+
+router.get(
+  '/auth/validate',
+  validateJwt({
+    jsonwebtoken: jsonwebtoken,
+    parseToken: (request) =>
+      request.headers.authorization?.replace('Bearer ', ''),
+  }),
+  async (request, response) => {
+    response.json({ payload: response.locals['payload'] });
+  }
+);

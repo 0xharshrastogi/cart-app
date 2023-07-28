@@ -1,3 +1,6 @@
+import { JwtPayload } from 'jsonwebtoken';
+import { Types } from 'mongoose';
+
 export interface Credential {
   email: string;
 
@@ -15,3 +18,15 @@ export interface IPasswordService {
 
   validate(text: string, hashed: string): Promise<boolean>;
 }
+
+export type Claims = {
+  [key: string]: unknown;
+};
+
+export interface IJsonWebTokenService {
+  encode(claims: Claims): string;
+
+  verify(token: string): JwtPayload;
+}
+
+export type DocumentInstance<T extends object> = T & { _id: Types.ObjectId };
