@@ -14,6 +14,7 @@
     "@types/react": "18.2.16",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.14",
+    "axios": "^1.4.0",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.12",
     "next": "13.4.12",
@@ -24,7 +25,8 @@
     "react-redux": "^8.1.1",
     "sass": "^1.64.1",
     "tailwindcss": "3.3.3",
-    "typescript": "5.1.6"
+    "typescript": "5.1.6",
+    "shared": "file:../shared"
   },
   "devDependencies": {
     "daisyui": "^3.5.0",

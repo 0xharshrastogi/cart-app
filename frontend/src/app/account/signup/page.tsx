@@ -1,11 +1,16 @@
 "use client";
 import Alert from "@/components/Alert";
+import { AuthenticationApiService } from "@/helper/AuthenticationService";
 import { useForm } from "@/hooks/useForm";
+import { IAuthApiService } from "@/shared/types";
 import Link from "next/link";
-import { FormEventHandler } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { User } from "shared";
 
+const authApiService: IAuthApiService = new AuthenticationApiService();
+
 const SignupPage = () => {
+  const [formError, setFormError] = useState<Error | null>(null);
   const form = useForm<User>({
     firstName: "",
     lastName: "",
@@ -13,9 +18,22 @@ const SignupPage = () => {
     password: "",
   });
 
+  useEffect(() => {
+    if (formError == null) return;
+    const id = setTimeout(() => {
+      setFormError(null);
+    }, 2000);
+    return () => {
+      clearTimeout(id);
+    };
+  }, [formError]);
+
   const onSubmitHandler: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    console.log(form.value);
+    authApiService
+      .signup(form.value)
+      .then((data) => console.log(data))
+      .catch((err) => setFormError(err));
   };
 
   return (
@@ -30,8 +48,8 @@ const SignupPage = () => {
             <div className="mb-4">
               <span className="font-bold text-2xl">Signup</span>
             </div>
-            <Alert hidden type="error">
-              This is alert
+            <Alert hidden={formError == null} type="error">
+              {formError?.message || ""}
             </Alert>
           </header>
           <div>
