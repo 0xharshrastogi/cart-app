@@ -3,6 +3,7 @@ import express from 'express';
 import { isValidObjectId } from 'mongoose';
 import { CartOutDTO } from '../DTO/CartOutDto';
 import { RabbitMqHandler } from '../messanger/setupRabbitMq';
+import { AuthorizeMiddleware } from '../middleware/authorize';
 import { Product } from '../models/product';
 import {
   Cart,
@@ -30,7 +31,21 @@ rabbitMqHandler.consume<{ userId: string }>(
   }
 );
 
-cartRouter.get('/cart', async (request, response) => {
+const authorized = AuthorizeMiddleware((request, token) => {
+  return new Promise<boolean>(async (resolve, reject) => {
+    await rabbitMqHandler.consume<{ verified: boolean }>(
+      'validate-jwt-result',
+      (payload) => {
+        console.log(payload);
+        return resolve(payload.verified);
+      }
+    );
+
+    await rabbitMqHandler.publish('validate-jwt', { token });
+  });
+});
+
+cartRouter.get('/cart', authorized, async (request, response) => {
   try {
     if (!('userId' in request.query)) {
       response.status(400).json({

@@ -28,6 +28,23 @@ const rabbitMqMessenger: IRabbitMqHandler = new RabbitMqHandler(
   'amqp://localhost'
 );
 
+rabbitMqMessenger.consume<{ token: string }>('validate-jwt', ({ token }) => {
+  console.log(token);
+  try {
+    const payload = jsonwebtoken.verify(token);
+    rabbitMqMessenger.publish('validate-jwt-result', {
+      verified: true,
+      payload: payload,
+    });
+    logger.log('token verified');
+  } catch (error) {
+    rabbitMqMessenger.publish('validate-jwt-result', {
+      verified: false,
+    });
+    logger.log('token not verified');
+  }
+});
+
 router.post('/auth/signup', async (request, response) => {
   const user = request.body as User;
   const { email } = user;
