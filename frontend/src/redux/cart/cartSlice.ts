@@ -2,6 +2,8 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { CartItem, Product, UserCart } from 'shared';
 
 const initialState: UserCart = {
+  id: '',
+
   items: [],
 
   initialized: false,
@@ -23,11 +25,17 @@ export const cartOrderSlice = createSlice({
 
     loadingCartOrders: (state) => ({ ...state, loading: true }),
 
-    initializeOrders: (_, action: PayloadAction<CartItem[]>) => ({
-      loading: false,
-      items: action.payload,
-      initialized: true,
-    }),
+    initializeOrders: (
+      _,
+      action: PayloadAction<{ id: string; products: CartItem[] }>
+    ) => {
+      return {
+        loading: false,
+        items: action.payload.products,
+        initialized: true,
+        id: action.payload.id,
+      };
+    },
 
     updateOrder: (state, action: PayloadAction<CartItem>) => {
       const index = state.items.findIndex(

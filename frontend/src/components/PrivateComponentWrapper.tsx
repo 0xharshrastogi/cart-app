@@ -4,7 +4,7 @@ import { FC, useEffect } from "react";
 
 type PrivateComponentWrapperProps = {
   redirectTo: string;
-  children: JSX.Element[];
+  children: JSX.Element;
 };
 
 export const PrivateComponentWrapper: FC<PrivateComponentWrapperProps> = (
@@ -18,5 +18,5 @@ export const PrivateComponentWrapper: FC<PrivateComponentWrapperProps> = (
     router.push(props.redirectTo);
   }, [isLoggedIn, router, props.redirectTo]);
 
-  return props.children;
+  return isLoggedIn ? props.children : null;
 };

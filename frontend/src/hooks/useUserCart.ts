@@ -1,39 +1,53 @@
+import { CartApiService } from '@/helper/CartApiService';
 import { cartOrderSlice } from '@/redux/cart/cartSlice';
-import { Cart, CartItem, Product } from 'shared';
+import { CartItem, Product } from 'shared';
 import { useAppDispatch } from './useAppDispatch';
 import { useAppSelector } from './useAppSelector';
 
-export const useUserCart = (userId: string) => {
+const cartApiService = CartApiService.create();
+
+export const useUserCart = () => {
   const userOrders = useAppSelector((state) => state.UserOrder);
+  const userId = useAppSelector((state) => {
+    const { user } = state.User;
+    return user.isLoggedIn ? user.info.id : null;
+  });
   const dispatch = useAppDispatch();
 
-  const initializeOrders = async () => {
-    dispatch(cartOrderSlice.actions.loadingCartOrders());
-    const response = await fetch(`https://dummyjson.com/carts/${userId}`);
-    const cart = (await response.json()) as Cart;
-    const cartItems = cart.products.map((product) => ({
-      product,
-      quantity: 1,
-    }));
+  const { id: cartId } = userOrders;
 
-    dispatch(cartOrderSlice.actions.initializeOrders(cartItems));
+  const initializeOrders = async () => {
+    if (!userId) throw new Error('cannot load user data without user id');
+    dispatch(cartOrderSlice.actions.loadingCartOrders());
+    const cart = await cartApiService.getUserCartProducts(userId);
+    dispatch(cartOrderSlice.actions.initializeOrders(cart));
   };
 
   const updateOrder = (item: CartItem) => {
     dispatch(cartOrderSlice.actions.updateOrder(item));
   };
 
-  const updateQuantityOfProduct = (product: Product, quantity: number) => {
-    updateOrder({ product, quantity });
+  const updateQuantityOfProduct = async (
+    product: Product,
+    quantity: number
+  ) => {
+    await cartApiService.updateQuantity(cartId, { product, quantity });
+    updateOrder({ product: product, quantity });
   };
 
-  const remove = (product: Product) =>
+  const remove = async (product: Product) => {
+    const { id: productId } = product;
+    await cartApiService.removeProductFromCart({
+      cartId,
+      productId,
+    });
     dispatch(cartOrderSlice.actions.removeOrder(product));
+  };
 
-  const removeProduct = (product: Product) => {};
-
-  const insert = (product: Product, quantity: number) =>
-    dispatch(cartOrderSlice.actions.addOrder({ product, quantity }));
+  const insert = async (product: Product, quantity: number) => {
+    await cartApiService.insertProductToCart({ cartId, productId: product.id });
+    dispatch(cartOrderSlice.actions.addOrder({ product: product, quantity }));
+  };
 
   return {
     orders: userOrders.items,
@@ -44,5 +58,6 @@ export const useUserCart = (userId: string) => {
     updateOrder,
     remove,
     insert,
+    id: userOrders.id,
   };
 };

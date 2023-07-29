@@ -18,7 +18,10 @@ type CartProductItemProps = {
 const CartProductItem: FC<CartProductItemProps> = (props) => {
   const [quantity, setQuantity] = useState(props.initialQuantity);
   const debouncedValue = useDebounce(quantity, 500);
-  const onDebouncedQuantityChangeRef = useRef(props.onDebouncedQuantityChange);
+  const onDebouncedQuantityChangeRef = useRef({
+    callback: props.onDebouncedQuantityChange,
+    isFirst: true,
+  });
 
   const { product } = props;
 
@@ -28,7 +31,12 @@ const CartProductItem: FC<CartProductItemProps> = (props) => {
   };
 
   useEffect(() => {
-    onDebouncedQuantityChangeRef.current?.(debouncedValue);
+    const { callback, isFirst } = onDebouncedQuantityChangeRef.current;
+    if (isFirst) {
+      onDebouncedQuantityChangeRef.current.isFirst = false;
+      return;
+    }
+    callback?.(debouncedValue);
   }, [debouncedValue]);
 
   return (

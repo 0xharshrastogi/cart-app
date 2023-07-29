@@ -3,6 +3,7 @@
 import { PrivateComponentWrapper } from "@/components/PrivateComponentWrapper";
 import Navbar from "@/container/Navbar/Navbar";
 import { ShoppingItem } from "@/container/ShoopingItem/ShoppingItem";
+import { CartApiService } from "@/helper/CartApiService";
 import { useUserCart } from "@/hooks/useUserCart";
 import { useEffect, useState } from "react";
 import { Product } from "shared";
@@ -14,9 +15,11 @@ const fetchShopProduct = async () => {
   return data.products;
 };
 
+const cartApiService = CartApiService.create();
+
 const ShopPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const cart = useUserCart("1");
+  const cart = useUserCart();
 
   useEffect(() => {
     if (cart.loadedFromServer || cart.loading) return;
@@ -24,7 +27,9 @@ const ShopPage = () => {
   }, [cart]);
 
   useEffect(() => {
-    fetchShopProduct().then((products) => setProducts(products));
+    cartApiService
+      .getAllShoppingProduct()
+      .then((products) => setProducts(products));
   }, []);
 
   const onBuyHandler = (product: Product) => {
@@ -32,7 +37,7 @@ const ShopPage = () => {
   };
 
   return (
-    <PrivateComponentWrapper redirectTo={"/account/login"}>
+    <>
       <Navbar />
       <main className="shopping-items-container">
         {products?.map((product) => (
@@ -46,8 +51,14 @@ const ShopPage = () => {
           />
         ))}
       </main>
-    </PrivateComponentWrapper>
+    </>
   );
 };
 
-export default ShopPage;
+export default function ShopPrivatePage() {
+  return (
+    <PrivateComponentWrapper redirectTo={"/account/login"}>
+      <ShopPage />
+    </PrivateComponentWrapper>
+  );
+}

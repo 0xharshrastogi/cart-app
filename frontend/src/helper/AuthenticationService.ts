@@ -2,6 +2,7 @@ import { Credentials, IAuthApiService, User, UserWithId } from '@/shared/types';
 import axios from 'axios';
 
 const ErrMsgSomethingWentWrong = 'Something went wrong';
+
 export class AuthenticationApiService implements IAuthApiService {
   private static readonly instance = axios.create({
     baseURL: 'http://localhost:8081/api/auth',

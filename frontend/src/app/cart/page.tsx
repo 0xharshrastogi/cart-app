@@ -3,13 +3,15 @@
 import CartProductItem from "@/container/CartProductItem/CartProductItem";
 import CartSection from "@/container/CartSection/CartSection";
 import Navbar from "@/container/Navbar/Navbar";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { useUserCart } from "@/hooks/useUserCart";
 import { useEffect, useMemo } from "react";
 import { Product } from "shared";
 import "./CartPage.scss";
 
 const CartPage = () => {
-  const userCartOrders = useUserCart("1");
+  const { user } = useAppSelector((state) => state.User);
+  const userCartOrders = useUserCart();
 
   useEffect(() => {
     if (userCartOrders.loadedFromServer || userCartOrders.loading) return;
@@ -24,7 +26,8 @@ const CartPage = () => {
 
   const totalCost = useMemo(() => {
     return userCartOrders.orders.reduce(
-      (total, { product, quantity }) => total + product.price * quantity,
+      (total, { product: product, quantity }) =>
+        total + parseInt(product.price) * quantity,
       0
     );
   }, [userCartOrders.orders]);
