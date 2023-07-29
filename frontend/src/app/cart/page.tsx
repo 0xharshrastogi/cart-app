@@ -1,16 +1,15 @@
 "use client";
 
+import { PrivateComponentWrapper } from "@/components/PrivateComponentWrapper";
 import CartProductItem from "@/container/CartProductItem/CartProductItem";
 import CartSection from "@/container/CartSection/CartSection";
 import Navbar from "@/container/Navbar/Navbar";
-import { useAppSelector } from "@/hooks/useAppSelector";
 import { useUserCart } from "@/hooks/useUserCart";
 import { useEffect, useMemo } from "react";
 import { Product } from "shared";
 import "./CartPage.scss";
 
 const CartPage = () => {
-  const { user } = useAppSelector((state) => state.User);
   const userCartOrders = useUserCart();
 
   useEffect(() => {
@@ -74,4 +73,10 @@ const CartPage = () => {
   );
 };
 
-export default CartPage;
+export default function CartPrivatePage() {
+  return (
+    <PrivateComponentWrapper redirectTo="/account/login">
+      <CartPage />
+    </PrivateComponentWrapper>
+  );
+}
