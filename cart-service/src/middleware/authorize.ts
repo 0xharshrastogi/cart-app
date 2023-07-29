@@ -22,3 +22,11 @@ export const AuthorizeMiddleware = (
     next();
   };
 };
+
+export const authorized = AuthorizeMiddleware((request, token) => {
+  return fetch('http://localhost:8081/api/auth/validate', {
+    headers: { authorization: `Bearer ${token}` },
+  })
+    .then((res) => res.ok)
+    .catch(() => false);
+});

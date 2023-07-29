@@ -1,10 +1,9 @@
 import { CartApiService } from '@/helper/CartApiService';
 import { cartOrderSlice } from '@/redux/cart/cartSlice';
+import { useMemo } from 'react';
 import { CartItem, Product } from 'shared';
 import { useAppDispatch } from './useAppDispatch';
 import { useAppSelector } from './useAppSelector';
-
-const cartApiService = CartApiService.create();
 
 export const useUserCart = () => {
   const userOrders = useAppSelector((state) => state.UserOrder);
@@ -12,6 +11,11 @@ export const useUserCart = () => {
     const { user } = state.User;
     return user.isLoggedIn ? user.info.id : null;
   });
+  const token = useAppSelector((state) => {
+    const { user } = state.User;
+    return user.isLoggedIn ? user.token : null;
+  });
+  const cartApiService = useMemo(() => CartApiService.create(token!), [token]);
   const dispatch = useAppDispatch();
 
   const { id: cartId } = userOrders;

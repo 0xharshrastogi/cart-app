@@ -31,14 +31,6 @@ rabbitMqHandler.consume<{ userId: string }>(
   }
 );
 
-const authorized = AuthorizeMiddleware((request, token) => {
-  return fetch('http://localhost:8081/api/auth/validate', {
-    headers: { authorization: `Bearer ${token}` },
-  })
-    .then((res) => res.ok)
-    .catch(() => false);
-});
-
 cartRouter.get('/cart', async (request, response) => {
   try {
     if (!('userId' in request.query)) {

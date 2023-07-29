@@ -4,8 +4,9 @@ import { PrivateComponentWrapper } from "@/components/PrivateComponentWrapper";
 import Navbar from "@/container/Navbar/Navbar";
 import { ShoppingItem } from "@/container/ShoopingItem/ShoppingItem";
 import { CartApiService } from "@/helper/CartApiService";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { useUserCart } from "@/hooks/useUserCart";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Product } from "shared";
 import "./ShopPage.scss";
 
@@ -15,11 +16,17 @@ const fetchShopProduct = async () => {
   return data.products;
 };
 
-const cartApiService = CartApiService.create();
-
 const ShopPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const cart = useUserCart();
+  const token = useAppSelector((state) =>
+    state.User.user.isLoggedIn ? state.User.user.token : null
+  );
+
+  const cartApiService = useMemo(() => {
+    if (!token) throw new Error("can't initiate a cart service without token");
+    return CartApiService.create(token);
+  }, [token]);
 
   useEffect(() => {
     if (cart.loadedFromServer || cart.loading) return;
@@ -30,7 +37,7 @@ const ShopPage = () => {
     cartApiService
       .getAllShoppingProduct()
       .then((products) => setProducts(products));
-  }, []);
+  }, [cartApiService]);
 
   const onBuyHandler = (product: Product) => {
     cart.insert(product, 1);

@@ -58,11 +58,15 @@ export class CartApiService implements ICartApiService {
     throw new Error(message);
   }
 
-  private static readonly instance = axios.create({
-    baseURL: 'http://localhost:8080/api',
-  });
-
-  static create(): ICartApiService {
-    return new CartApiService(CartApiService.instance);
+  static create(token: string): ICartApiService {
+    console.log(token);
+    return new CartApiService(
+      axios.create({
+        baseURL: 'http://localhost:8080/api',
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      })
+    );
   }
 }
