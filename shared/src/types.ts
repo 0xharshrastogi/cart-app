@@ -11,17 +11,11 @@ export interface User extends Credentials {
 }
 
 export interface Product {
-  id: number;
+  id: string;
   title: string;
   description: string;
-  price: number;
-  discountPercentage: number;
-  rating: number;
-  stock: number;
-  brand: string;
-  category: string;
+  price: string;
   thumbnail: string;
-  images: string[];
 }
 
 export interface OrderItem {
@@ -47,6 +41,8 @@ export interface CartItem {
 }
 
 export interface UserCart {
+  id: string;
+
   items: CartItem[];
 
   initialized: boolean;
