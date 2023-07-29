@@ -32,20 +32,14 @@ rabbitMqHandler.consume<{ userId: string }>(
 );
 
 const authorized = AuthorizeMiddleware((request, token) => {
-  return new Promise<boolean>(async (resolve, reject) => {
-    await rabbitMqHandler.consume<{ verified: boolean }>(
-      'validate-jwt-result',
-      (payload) => {
-        console.log(payload);
-        return resolve(payload.verified);
-      }
-    );
-
-    await rabbitMqHandler.publish('validate-jwt', { token });
-  });
+  return fetch('http://localhost:8081/api/auth/validate', {
+    headers: { authorization: `Bearer ${token}` },
+  })
+    .then((res) => res.ok)
+    .catch(() => false);
 });
 
-cartRouter.get('/cart', authorized, async (request, response) => {
+cartRouter.get('/cart', async (request, response) => {
   try {
     if (!('userId' in request.query)) {
       response.status(400).json({

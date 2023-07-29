@@ -12,13 +12,13 @@ export const AuthorizeMiddleware = (
       return;
     }
     const result = await verifyToken(request, token);
+
     if (!result) {
       response
         .status(401)
         .json({ message: 'Unauthorized Request: token verification failed' });
       return;
     }
-    console.log('Verified');
     next();
   };
 };

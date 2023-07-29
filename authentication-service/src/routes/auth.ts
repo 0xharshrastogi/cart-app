@@ -29,16 +29,16 @@ const rabbitMqMessenger: IRabbitMqHandler = new RabbitMqHandler(
 );
 
 rabbitMqMessenger.consume<{ token: string }>('validate-jwt', ({ token }) => {
-  console.log(token);
+  logger.log('received request for verification of token');
   try {
     const payload = jsonwebtoken.verify(token);
-    rabbitMqMessenger.publish('validate-jwt-result', {
+    rabbitMqMessenger.publish('result-jwt-validation', {
       verified: true,
       payload: payload,
     });
     logger.log('token verified');
   } catch (error) {
-    rabbitMqMessenger.publish('validate-jwt-result', {
+    rabbitMqMessenger.publish('result-jwt-validation', {
       verified: false,
     });
     logger.log('token not verified');

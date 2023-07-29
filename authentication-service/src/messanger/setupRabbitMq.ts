@@ -34,7 +34,6 @@ export class RabbitMqHandler implements IRabbitMqHandler {
       this.ROUTING_KEY,
       Buffer.from(JSON.stringify({ type, payload }))
     );
-    console.log(`Emitted ::${type}`, payload);
   }
 
   async consume<T>(type: string, handler: (payload: T) => void) {
@@ -53,6 +52,7 @@ export class RabbitMqHandler implements IRabbitMqHandler {
         type: string;
         payload: unknown;
       };
+      console.log('received', type);
       const events = this.event.get(type);
       if (!events) {
         channel.ack(message);
