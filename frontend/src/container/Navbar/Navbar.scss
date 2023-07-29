@@ -15,6 +15,27 @@
     align-items: center;
     gap: 2rem;
   }
+
+  .navbar-title {
+    font-size: 0.8rem;
+    font-weight: bold;
+    @media (min-width: 768px) {
+      font-size: 1.125rem;
+    }
+  }
+
+  .cart-icon {
+    background-color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+  }
+
+  .totalitem {
+    color: green;
+    font-weight: bold;
+    display: inline-block;
+    padding: 3px;
+  }
 }
 :where(.navbar > *) {
   display: inline-flex;

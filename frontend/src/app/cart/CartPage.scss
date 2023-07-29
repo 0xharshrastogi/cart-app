@@ -1,7 +1,17 @@
 .cart-container {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  column-gap: 2rem;
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
+
+  &:nth-child(1) {
+    order: 1;
+  }
+  @media (min-width: 768px) {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    column-gap: 2rem;
+  }
+
   //   background-color: rebeccapurple;
 }
 
@@ -13,5 +23,9 @@
     font-size: 0.8rem;
     color: gray;
     font-weight: 500;
+  }
+
+  .dollar {
+    color: green;
   }
 }

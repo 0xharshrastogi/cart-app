@@ -1,11 +1,15 @@
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useUserCart } from "@/hooks/useUserCart";
+import { userSlice } from "@/redux/user/userSlice";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import "./Navbar.scss";
 
 const Navbar = () => {
-  const cart = useUserCart("1");
-
+  const cart = useUserCart();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   const totalItems = cart.orders.length;
 
   useEffect(() => {
@@ -13,9 +17,16 @@ const Navbar = () => {
     cart.initializeOrders();
   }, [cart]);
 
+  const onLogoutHandler = () => {
+    dispatch(userSlice.actions.logout());
+    // router.push("/");
+  };
+
   return (
     <div className="navbar bg-base-100">
-      <a className="btn btn-ghost normal-case text-xl">🛒</a>
+      <div>
+        <span className="navbar-title">Welcome to Cart Dashboard</span>
+      </div>
 
       <div className="item">
         <ul className="">
@@ -24,9 +35,18 @@ const Navbar = () => {
           </li>
 
           <li>
-            <Link href="cart">
-              Cart <div className="badge">{totalItems}</div>
+            <Link href="cart" className="cart-icon">
+              Cart
+              <sup className="totalitem">
+                {totalItems}
+                {/* <div className="badge">{totalItems}</div> */}
+              </sup>
             </Link>
+          </li>
+          <li>
+            <button className="btn btn-secondary" onClick={onLogoutHandler}>
+              Logout
+            </button>
           </li>
         </ul>
       </div>

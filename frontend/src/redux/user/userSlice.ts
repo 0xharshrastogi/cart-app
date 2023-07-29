@@ -1,9 +1,11 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
+type UserNotLoggedIn = {
+  isLoggedIn: false;
+};
+
 type TUserProps =
-  | {
-      isLoggedIn: false;
-    }
+  | UserNotLoggedIn
   | {
       isLoggedIn: true;
       token: string;
@@ -41,6 +43,10 @@ export const userSlice = createSlice({
   reducers: {
     setUserAuthenticate: (_, action: PayloadAction<TSetUserProps>) => {
       return { user: { isLoggedIn: true, ...action.payload } };
+    },
+
+    logout: () => {
+      return { user: { isLoggedIn: false } } as UserState;
     },
   },
 });
