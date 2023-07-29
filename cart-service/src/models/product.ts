@@ -4,6 +4,7 @@ export interface Product extends Document {
   title: string;
   price: string;
   thumbnail: string;
+  description: string;
 }
 
 export type ProductWithId = Document<unknown, {}, Product> &
@@ -15,6 +16,7 @@ const productSchema = new Schema<Product>({
   title: { type: String, required: true },
   price: { type: String, required: true },
   thumbnail: { type: String, required: true },
+  description: { type: String, required: true },
 });
 
 export const Product = model<Product>('Products', productSchema);

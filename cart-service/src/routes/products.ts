@@ -9,6 +9,7 @@ const mapProductOut = (products: ProductInstance | ProductInstance[]) => {
     title: product.title,
     price: product.price,
     thumbnail: product.thumbnail,
+    description: product.description,
   });
 
   return Array.isArray(products) ? products.map(mapper) : mapper(products);
