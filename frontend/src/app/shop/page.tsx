@@ -10,12 +10,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Product } from "shared";
 import "./ShopPage.scss";
 
-const fetchShopProduct = async () => {
-  const response = await fetch("https://dummyjson.com/products");
-  const data = (await response.json()) as { products: Product[] };
-  return data.products;
-};
-
 const ShopPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const cart = useUserCart();
