@@ -1,6 +1,7 @@
 import debug from 'debug';
 import express from 'express';
 import { isValidObjectId } from 'mongoose';
+import { CartOutDTO } from '../DTO/CartOutDto';
 import { Product } from '../models/product';
 import {
   Cart,
@@ -37,7 +38,7 @@ cartRouter.get('/cart', async (request, response) => {
       return;
     }
 
-    response.json(cartItem);
+    response.json(new CartOutDTO(cartItem));
   } catch (error) {
     response.status(500).json({
       message: 'failed to fetch user carts',

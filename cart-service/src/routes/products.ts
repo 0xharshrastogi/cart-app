@@ -1,19 +1,8 @@
 import { Router } from 'express';
-import { Product, ProductWithId as ProductInstance } from '../models/product';
+import { Product } from '../models/product';
+import { mapProductOut } from '../utils';
 
 export const productRouter = Router();
-
-const mapProductOut = (products: ProductInstance | ProductInstance[]) => {
-  const mapper = (product: ProductInstance) => ({
-    id: product.id,
-    title: product.title,
-    price: product.price,
-    thumbnail: product.thumbnail,
-    description: product.description,
-  });
-
-  return Array.isArray(products) ? products.map(mapper) : mapper(products);
-};
 
 productRouter.get('/product', async (_, response) => {
   const products = await Product.find();
