@@ -42,7 +42,7 @@ To run the Cart App on your local machine, follow these steps:
 2. Change the path: `cd cart-app`
 3. Install dependencies microservice: `make install-deps`
 4. Start docker service : `make run-docker-service`
-5. Start the app and service: `make rub`
+5. Start the app and service: `make run`
 6. Access the application in your browser at http://localhost:3000.
 
 **Please ensure you meet the prerequisites before running the application. If you encounter any issues during the setup, refer to the documentation or open an issue in the repository for assistance.**
