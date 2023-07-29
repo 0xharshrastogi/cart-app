@@ -30,3 +30,10 @@ export interface IJsonWebTokenService {
 }
 
 export type DocumentInstance<T extends object> = T & { _id: Types.ObjectId };
+
+export interface IRabbitMqHandler {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  publish<T>(type: string, payload: T): Promise<void>;
+
+  consume<T>(type: string, handler: (payload: T) => void): Promise<void>;
+}

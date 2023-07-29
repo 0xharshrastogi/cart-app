@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "amqplib": "^0.10.3",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "debug": "^4.3.4",
@@ -17,6 +18,7 @@
     "mongoose": "^7.4.1"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.1",
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.13",
     "@types/debug": "^4.1.8",

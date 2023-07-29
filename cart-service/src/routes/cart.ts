@@ -2,6 +2,7 @@ import debug from 'debug';
 import express from 'express';
 import { isValidObjectId } from 'mongoose';
 import { CartOutDTO } from '../DTO/CartOutDto';
+import { RabbitMqHandler } from '../messanger/setupRabbitMq';
 import { Product } from '../models/product';
 import {
   Cart,
@@ -14,6 +15,20 @@ import {
 const cartLog = debug('cart::log');
 
 export const cartRouter = express.Router();
+
+const rabbitMqHandler = new RabbitMqHandler('amqp://localhost');
+
+rabbitMqHandler.consume<{ userId: string }>(
+  'create-cart',
+  async ({ userId }) => {
+    const cart = await Cart.create({ userId, products: [] });
+    console.log(cart);
+
+    rabbitMqHandler.publish('cart-created', {
+      cardId: cart.id,
+    });
+  }
+);
 
 cartRouter.get('/cart', async (request, response) => {
   try {

@@ -5,12 +5,14 @@ import {
   Credential,
   IJsonWebTokenService,
   IPasswordService,
+  IRabbitMqHandler,
   User,
 } from '../common/types';
 import { APP_JWT_EXPIRATION_INTERVAL_SECOND, APP_JWT_SECRET } from '../config';
 import { BcryptPassword as BcryptPasswordService } from '../helpers/BcryptPasswordHandler';
 import { ApplicationJwtService } from '../helpers/JwtService';
 import { DebugLogger } from '../helpers/Logger';
+import { RabbitMqHandler } from '../messanger/setupRabbitMq';
 import { validateJwt } from '../middleware/validateJwt';
 import { UserCollection } from '../models/user';
 
@@ -22,6 +24,9 @@ const jsonwebtoken: IJsonWebTokenService = new ApplicationJwtService({
   secret: APP_JWT_SECRET,
   expireInSecond: APP_JWT_EXPIRATION_INTERVAL_SECOND,
 });
+const rabbitMqMessenger: IRabbitMqHandler = new RabbitMqHandler(
+  'amqp://localhost'
+);
 
 router.post('/auth/signup', async (request, response) => {
   const user = request.body as User;
@@ -42,14 +47,18 @@ router.post('/auth/signup', async (request, response) => {
     const document = new UserCollection(user);
     document.save();
 
-    logger.log('user info saved successfully');
-    response.status(200).json({
-      user: new UserOutDTO(document),
-      token: jsonwebtoken.encode({
-        email: document.email,
-        id: document.id,
-      }),
+    await rabbitMqMessenger.consume('cart-created', (payload) => {
+      logger.log('cart created for user', payload);
+      response.status(200).json({
+        user: new UserOutDTO(document),
+        token: jsonwebtoken.encode({
+          email: document.email,
+          id: document.id,
+        }),
+      });
     });
+
+    await rabbitMqMessenger.publish('create-cart', { userId: document.id });
   } catch (error) {
     logger.log(error);
     response.status(500).json({

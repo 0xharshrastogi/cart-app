@@ -11,6 +11,9 @@ run-cart-service:
 run-database:
 	docker compose up mongodb
 
+run-rabbit:
+	docker compose up rabbitmq
+
 run-frontend:
 	npm --prefix ${FRONTEND_WKDIR} run dev
 

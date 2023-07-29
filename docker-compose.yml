@@ -10,5 +10,20 @@ services:
     volumes:
       - mongodb_data:/data/db
 
+  rabbitmq:
+    image: rabbitmq:3
+    container_name: some-rabbit
+    hostname: my-rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
+      - rabbitmq_config:/etc/rabbitmq
+
 volumes:
   mongodb_data:
+  rabbitmq_data:
+  rabbitmq_log:
+  rabbitmq_config:
